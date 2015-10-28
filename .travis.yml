@@ -2,7 +2,7 @@ language: perl
 sudo: false
 matrix:
   include:
-    - perl: "5.20.1"
+    - perl: "5.20"
     - perl: "5.22"
 before_install:
   - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
