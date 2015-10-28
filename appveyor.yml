@@ -8,7 +8,7 @@ install:
   - perl -V
   - cpan App::cpanminus
   - cpanm Inline::Module
-  - cpanm -q --showdeps --with-develop --with-suggests . | findstr /v "^perl\>" | cpanm -n
+  - cpanm -q --showdeps --with-develop . | findstr /v "^perl\>" | cpanm -n
   - 'echo End install at: & time /t'
 
 build_script:
