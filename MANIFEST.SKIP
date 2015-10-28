@@ -2,3 +2,4 @@
 .bak$
 ^\.git
 \.tar\.gz
+^\.inline
