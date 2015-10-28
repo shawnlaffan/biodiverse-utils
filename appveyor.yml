@@ -7,7 +7,7 @@ install:
   - set TMPDIR=%APPVEYOR_BUILD_FOLDER%\tmp
   - perl -V
   - cpan App::cpanminus
-  - cpanm Inline::Module
+  - cpanm --notest Inline::Module
   - cpanm -q --showdeps --with-develop . | findstr /v "^perl\>" | cpanm -n
   - 'echo End install at: & time /t'
 
