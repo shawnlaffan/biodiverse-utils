@@ -3,7 +3,7 @@ our $VERSION = '1.01';
 use strict; use warnings;
 
 use Exporter 'import';
-our @EXPORT = qw(
+our @EXPORT_OK = qw(
     add_hash_keys
     add_hash_keys_lastif
     copy_values_from

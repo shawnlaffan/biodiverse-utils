@@ -33,12 +33,14 @@ WriteMakefile(
       },
       test => {
         requires => {
-          'Math::Random::MT::Auto'    => '0',
+          'Math::Random::MT::Auto' => '0',
           'List::Util' => '0',
           'Test::More' => '0',
         },
         suggests => {
           'Test::LeakTrace'  => '0',
+          'Test::NoTabs' => '0',
+          'Test::CheckManifest' => '0',
         },
       },
     },

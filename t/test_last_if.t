@@ -1,6 +1,7 @@
 use Test::More;
 
 use Biodiverse::Utils::XS;
+use Biodiverse::Utils::PP;
 
 use List::Util qw /max/;
 use Math::Random::MT::Auto;
@@ -44,11 +45,11 @@ foreach my $i (0 .. $m) {
 
 
 
-#  only really need to test inline_assign - the rest is useful paranoia
+#  only really need to test xs_assign - the rest is useful paranoia
 my $sliced = slice (\%path_hashes);
-my $forled = for_last (\%path_arrays);
+my $forled = pp_assign (\%path_arrays);
 my $slice2 = slice_mk2 (\%path_hashes);
-my $inline = inline_assign (\%path_arrays);
+my $inline = xs_assign (\%path_arrays);
 
 #foreach my $key (keys %len_hash) {
 #    $len_hash{$key}++;
@@ -95,40 +96,54 @@ sub slice_mk2 {
     return \%combined;
 }
 
-sub for_last {
-    my $paths = shift;
-    
-    
-    #  initialise
-    my %combined;
+#sub for_last {
+#    my $paths = shift;
+#    
+#    
+#    #  initialise
+#    my %combined;
+#
+#  LIST:
+#    foreach my $list (values %$paths) {
+#        if (!scalar keys %combined) {
+#            @combined{@$list} = undef;
+#            next LIST;
+#        }
+#        
+#        foreach my $key (@$list) {
+#            last if exists $combined{$key};
+#            $combined{$key} = undef;
+#        }
+#    }
+#    @combined{keys %combined} = @len_hash{keys %combined};
+#
+#    return \%combined;
+#}
 
-  LIST:
-    foreach my $list (values %$paths) {
-        if (!scalar keys %combined) {
-            @combined{@$list} = undef;
-            next LIST;
-        }
-        
-        foreach my $key (@$list) {
-            last if exists $combined{$key};
-            $combined{$key} = undef;
-        }
-    }
-    @combined{keys %combined} = @len_hash{keys %combined};
-
-    return \%combined;
-}
-
-sub inline_assign {
+sub pp_assign {
     my $paths = shift;
 
     my %combined;
 
     foreach my $path (values %$paths) {
-        add_hash_keys_lastif (\%combined, $path);
+        Biodiverse::Utils::PP::add_hash_keys_lastif (\%combined, $path);
     }
 
-    copy_values_from (\%combined, \%len_hash);
+    Biodiverse::Utils::PP::copy_values_from (\%combined, \%len_hash);
+
+    return \%combined;
+}
+
+sub xs_assign {
+    my $paths = shift;
+
+    my %combined;
+
+    foreach my $path (values %$paths) {
+        Biodiverse::Utils::XS::add_hash_keys_lastif (\%combined, $path);
+    }
+
+    Biodiverse::Utils::XS::copy_values_from (\%combined, \%len_hash);
 
     return \%combined;
 }
