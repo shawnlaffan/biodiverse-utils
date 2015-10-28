@@ -1,19 +1,6 @@
 language: perl
-sudo: false
-matrix:
-  include:
-    - perl: "5.20"
-    - perl: "5.22"
-before_install:
-  - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
-  - source ~/travis-perl-helpers/init
-  - build-perl
-  - perl -V
-install:
-  - perl Makefile.PL && make && make test && make install && make clean
-branches:
-  except:
-    - /^wip\//
-    - /^blocked/
-  only:
-    - master
+perl:
+  - "5.20"
+  - "5.18"
+  - "5.16"
+  - "5.14"
