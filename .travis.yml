@@ -9,8 +9,8 @@ before_install:
   - source ~/travis-perl-helpers/init
   - build-perl
   - perl -V
-  - cpanm --notest Inline::Module Math::Random::MT::Auto
-  - cpanm -q --showdeps --with-develop .
+  - cpanm --notest Inline::Module
+  - cpanm -q --installdeps --showdeps --with-develop .
 install:
   - perl Makefile.PL && make && make test && make install && make clean
 branches:
