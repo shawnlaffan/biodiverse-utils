@@ -10,7 +10,8 @@ before_install:
   - build-perl
   - perl -V
   - cpanm --notest Inline::Module
-  - cpanm -v `cpanm -v --installdeps --showdeps --with-develop . | grep -v '^perl'`
+  - cpanm -v --installdeps --showdeps --with-develop . | grep -v '^perl'
+  - cpanm -n `cpanm -v --installdeps --showdeps --with-develop . | grep -v '^perl'`
 install:
   - perl Makefile.PL && make && make test && make install && make clean
 branches:
