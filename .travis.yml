@@ -10,7 +10,7 @@ before_install:
   - build-perl
   #- perl -V
   # - cpanm --notest Inline::Module
-  - cpanm --installdeps --showdeps --with-develop . | grep -v '^perl|Configuring|Working on'
+  - cpanm --installdeps --showdeps --with-develop . | grep -v '^perl|Configuring|>'
   #- cpanm -n `cpanm --installdeps --showdeps --with-develop . | grep -v '^perl' | grep -v Configuring | grep -v 'Working on'`
 install:
   - perl Makefile.PL && make && make test && make install && make clean
