@@ -1,17 +1,5 @@
 .travis.yml
 appveyor.yml
-blib/arch/.exists
-blib/arch/auto/Biodiverse/Utils/.exists
-blib/arch/auto/Biodiverse/Utils/XS/Inline/Inline.xs.dll
-blib/bin/.exists
-blib/lib/auto/Biodiverse/Utils/.exists
-blib/lib/Biodiverse/.exists
-blib/lib/Biodiverse/Utils/PP.pm
-blib/lib/Biodiverse/Utils/XS.pm
-blib/lib/Biodiverse/Utils/XS/Inline.pm
-blib/man1/.exists
-blib/man3/.exists
-blib/script/.exists
 CHANGES
 lib/Biodiverse/Utils.pm
 lib/Biodiverse/Utils/PP.pm
@@ -24,7 +12,6 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 MYMETA.json
 MYMETA.yml
-pm_to_blib
 README.md
 t/test_last_if.t
 xt/01-has_versions.t
