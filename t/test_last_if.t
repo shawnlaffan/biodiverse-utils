@@ -5,9 +5,6 @@ use Biodiverse::Utils::PP;
 
 use List::Util qw /max/;
 
-#  need to wean ourselves off MRMA for tests
-#my $prng = Math::Random::MT::Auto->new;
-
 local $| = 1;
 
 my $n = 20;   #  depth of the paths

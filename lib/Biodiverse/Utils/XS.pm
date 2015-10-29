@@ -117,6 +117,7 @@ void add_hash_keys_last_if_exists (SV* dest, SV* from) {
     //  Generate one SV and re-use it.
     //  Need to warn in docs that it is the same SV for all assigned vals,
     //  so change one means change all.
+    //  Could use a global SV?
     sv_fill_val = newSV(0);
 
     //  could use a while loop with condition being the key does not exist in dest?
