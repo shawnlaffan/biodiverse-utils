@@ -5,8 +5,11 @@ use strict; use warnings;
 use Exporter 'import';
 our @EXPORT_OK = qw(
     add_hash_keys
-    add_hash_keys_lastif
+    add_hash_keys_last_if_exists
     copy_values_from
+);
+our %EXPORT_TAGS = (
+    all => \@EXPORT_OK,
 );
 
 use Biodiverse::Utils::XS::Inline C => <<'...';
@@ -92,7 +95,7 @@ void copy_values_from (SV* dest, SV* from) {
 }
 
 // needs a better name
-void add_hash_keys_lastif(SV* dest, SV* from) {
+void add_hash_keys_last_if_exists (SV* dest, SV* from) {
     HV* hash_dest;
     AV* arr_from;
     int i;

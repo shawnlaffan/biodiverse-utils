@@ -10,7 +10,7 @@ use Inline::Module;
 WriteMakefile(
   NAME => 'Biodiverse::Utils',
   VERSION => '1.01',
-  ABSTRACT => 'Utilities for Biodiverse, using XS where possible',
+  ABSTRACT => 'Utilities for Biodiverse, using XS',
   AUTHOR => 'Shawn Laffan <shawnlaffan@gmail.com>',
   LICENSE => 'lgpl3',
   MIN_PERL_VERSION => '5.008001',
@@ -33,7 +33,6 @@ WriteMakefile(
       },
       test => {
         requires => {
-          'Math::Random::MT::Auto' => '0',
           'List::Util' => '0',
           'Test::More' => '0',
         },

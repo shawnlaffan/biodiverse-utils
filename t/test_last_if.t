@@ -6,10 +6,9 @@ use Biodiverse::Utils::PP;
 use List::Util qw /max/;
 use Math::Random::MT::Auto;
 
-#use rlib;
-#use Biodiverse::Bencher qw/add_hash_keys_lastif copy_values_from/;
 
-my $prng = Math::Random::MT::Auto->new;
+#  need to wean ourselves off MRMA for tests
+#my $prng = Math::Random::MT::Auto->new;
 
 local $| = 1;
 
@@ -28,32 +27,24 @@ my %len_hash;
 
 #  generate a set of paths 
 foreach my $i (0 .. $m) {
-    my $same_to = max (1, int $prng->rand($r));
+    my $same_to = max (1, int (rand()*$r));
     my @a;
-    #@a = map {((1+$m)*$i*$n+$_), 1} (0 .. $same_to);
     @a = map {$_ => $_} (0 .. $same_to);
     push @a, map {((1+$m)*$i*$n+$_) => $_} ($same_to+1 .. $n);
-    #say join ' ', @a;
     my %hash = @a;
     $path_hashes{$i} = \%hash;
     $path_arrays{$i} = [reverse sort {$a <=> $b} keys %hash];
-    
+
     @len_hash{keys %hash} = values %hash;
 }
 
 
 
-
-
-#  only really need to test xs_assign - the rest is useful paranoia
+#  only really need to test pp_assign and xs_assign - the rest is useful paranoia
 my $sliced = slice (\%path_hashes);
 my $forled = pp_assign (\%path_arrays);
 my $slice2 = slice_mk2 (\%path_hashes);
 my $inline = xs_assign (\%path_arrays);
-
-#foreach my $key (keys %len_hash) {
-#    $len_hash{$key}++;
-#}
 
 is_deeply ($sliced, \%len_hash, 'slice results are the same');
 is_deeply ($slice2, \%len_hash, 'slice2 results are the same');
@@ -126,7 +117,7 @@ sub pp_assign {
     my %combined;
 
     foreach my $path (values %$paths) {
-        Biodiverse::Utils::PP::add_hash_keys_lastif (\%combined, $path);
+        Biodiverse::Utils::PP::add_hash_keys_last_if_exists (\%combined, $path);
     }
 
     Biodiverse::Utils::PP::copy_values_from (\%combined, \%len_hash);
@@ -140,7 +131,7 @@ sub xs_assign {
     my %combined;
 
     foreach my $path (values %$paths) {
-        Biodiverse::Utils::XS::add_hash_keys_lastif (\%combined, $path);
+        Biodiverse::Utils::XS::add_hash_keys_last_if_exists (\%combined, $path);
     }
 
     Biodiverse::Utils::XS::copy_values_from (\%combined, \%len_hash);

@@ -5,7 +5,7 @@ install:
   - path C:\strawberry\perl\bin;C:\strawberry\perl\site\bin;C:\strawberry\c\bin;%PATH%
   - mkdir %APPVEYOR_BUILD_FOLDER%\tmp
   - set TMPDIR=%APPVEYOR_BUILD_FOLDER%\tmp
-  - perl -V
+  #- perl -V
   - cpan App::cpanminus
   - cpanm --notest Inline::Module
   - cpanm -q --showdeps --with-develop . | findstr /v "^perl\>" | cpanm -n
