@@ -9,8 +9,8 @@ before_install:
   - source ~/travis-perl-helpers/init
   - build-perl
   #- perl -V
-  # - cpanm --notest Inline::Module
-  - cpanm --installdeps --showdeps --with-develop . | grep -v '^perl' | grep -v Configuring
+  - cpanm --notest Inline::Module
+  - cpanm --installdeps --showdeps --with-develop . | grep -v '^perl'
   #- cpanm -n `cpanm --installdeps --showdeps --with-develop . | grep -v '^perl' | grep -v Configuring | grep -v 'Working on'`
 install:
   - perl Makefile.PL && make && make test && make install && make clean
