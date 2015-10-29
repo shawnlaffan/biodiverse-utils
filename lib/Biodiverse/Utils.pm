@@ -15,7 +15,7 @@ BEGIN {
 use Exporter 'import';
 our @EXPORT_OK = qw(
     add_hash_keys
-    add_hash_keys_last_if_exists_exists
+    add_hash_keys_last_if_exists
     copy_values_from
 );
 our %EXPORT_TAGS = (
@@ -34,11 +34,18 @@ Biodiverse::Utils - Utilities for the Biodiverse software.
 
 =head1 SYNOPSIS
 
-  use Biodiverse::Utils qw /all/;
+  use Biodiverse::Utils qw /:all/;
 
-  
+  my $dest_hash_ref = {}
+  my $from_hash_ref = {a => 1, b => 2, c => 3};
+  my @extra_keys = qw /f e d c b a/;
 
-  
+  add_hash_keys ($dest_hash_ref, $from_hash_ref)
+  print join ' ', sort keys %$dest_hash_ref;
+  #  a b c
+  add_hash_keys_last_if_exists ($dest_hash_ref, \@extra_keys)
+  print join ' ', sort keys %$dest_hash_ref;
+  #  a b c d e f
 
 =head1 ABSTRACT
 
@@ -91,8 +98,9 @@ C<copy_values_from>.
 Sets the values in $dest_hash_ref to match those in $from_hash_ref.
 Useful in tandem with C<add_hash_keys_last_if_exists> since new values can be assigned.
 
-One could also use a plain slice, but slicing has more overheads.
-@dest_hash{keys %dest_hash} = @from_hash{keys %dest_hash}
+One could also use a plain slice, but slicing has more overheads
+when used this way.
+C<@dest_hash{keys %dest_hash} = @from_hash{keys %dest_hash}>
 
 
 =back
@@ -109,7 +117,7 @@ L<Panda::Lib>
 
 =head1 AUTHOR
 
-Shawn Laffan, E<lt>shawnlaffan@gmail.comE<gt>
+Shawn Laffan, E<shawnlaffan@gmail.com>
 
 
 =head1 COPYRIGHT AND LICENSE
