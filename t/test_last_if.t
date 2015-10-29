@@ -4,8 +4,6 @@ use Biodiverse::Utils::XS;
 use Biodiverse::Utils::PP;
 
 use List::Util qw /max/;
-use Math::Random::MT::Auto;
-
 
 #  need to wean ourselves off MRMA for tests
 #my $prng = Math::Random::MT::Auto->new;
