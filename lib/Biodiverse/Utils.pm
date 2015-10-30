@@ -102,6 +102,16 @@ One could also use a plain slice, but slicing has more overheads
 when used this way.
 C<@dest_hash{keys %dest_hash} = @from_hash{keys %dest_hash}>
 
+=item get_rpe_null (\%node_lengths, \%local_ranges, \%global_ranges)
+
+Calculate the null score for Relative Phylogenetic Endemism.
+It is the sum of the lengths times the local ranges divided by
+the global ranges (=sum(len * lr / gr)).
+
+The XS version is twice as fast as the pure perl version.
+
+Searches all keys in %global_ranges, and does not check if
+they do not exist in the other hashes.  If so then bad things might happen.
 
 =back
 
@@ -117,7 +127,7 @@ L<Panda::Lib>
 
 =head1 AUTHOR
 
-Shawn Laffan, E<shawnlaffan@gmail.com>
+Shawn Laffan, shawnlaffan@gmail.com
 
 
 =head1 COPYRIGHT AND LICENSE
