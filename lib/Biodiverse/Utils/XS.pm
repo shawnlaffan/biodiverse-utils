@@ -139,6 +139,49 @@ void add_hash_keys_last_if_exists (SV* dest, SV* from) {
     return;
 }
 
+double get_rpe_null (SV* node_lens_ref, SV* local_ranges_ref, SV* global_ranges_ref) {
+    HV* node_len_hash;
+    HV* local_range_hash;
+    HV* global_range_hash;
+    HE* he_node_len;
+    HE* he_local_range;
+    HE* he_global_range;
+
+    SV* sv_key;
+    int i, num_keys_from;
+    double rpe_null = 0;
+    double nl, lr, gr;
+
+    if (! SvROK(node_lens_ref))
+      croak("node_lens_ref is not a reference");
+    if (! SvROK(local_ranges_ref))
+      croak("local_ranges_ref is not a reference");
+    if (! SvROK(global_ranges_ref))
+      croak("global_ranges_ref is not a reference");
+    
+    node_len_hash     = (HV*)SvRV(node_lens_ref);
+    local_range_hash  = (HV*)SvRV(local_ranges_ref);
+    global_range_hash = (HV*)SvRV(global_ranges_ref);
+
+    num_keys_from = hv_iterinit(global_range_hash);
+    // printf ("number of hash keys: %i\n", num_keys_from);
+
+    for (i = 0; i < num_keys_from; i++) {
+        he_global_range = hv_iternext(global_range_hash);
+        sv_key = hv_iterkeysv(he_global_range);
+        // printf ("Checking key %i: '%s' (%x)\n", i, SvPV(sv_key, PL_na), sv_key);
+        
+        he_node_len    = hv_fetch_ent (node_len_hash, sv_key, 0, 0);
+        he_local_range = hv_fetch_ent (local_range_hash, sv_key, 0, 0);
+        nl = SvNV_nomg (HeVAL(he_node_len));
+        lr = SvNV_nomg (HeVAL(he_local_range));
+        gr = SvNV_nomg (HeVAL(he_global_range));
+        rpe_null += gr ? nl * lr / gr : 0;
+    }
+    
+    return rpe_null;
+}
+
 ...
 
 1;

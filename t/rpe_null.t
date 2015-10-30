@@ -13,5 +13,10 @@ my $null_pp = Biodiverse::Utils::PP::get_rpe_null (\%node_lens, \%local_ranges, 
 
 is ($null_pp, 6, 'PP::get_rpe_null works');
 
+my $null_xs = Biodiverse::Utils::XS::get_rpe_null (\%node_lens, \%local_ranges, \%global_ranges);
+
+is ($null_xs, 6, 'XS::get_rpe_null works');
+
 
 done_testing();
+
