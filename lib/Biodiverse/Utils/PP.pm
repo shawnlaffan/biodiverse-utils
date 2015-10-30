@@ -9,6 +9,7 @@ our @EXPORT_OK = qw(
     add_hash_keys
     add_hash_keys_last_if_exists
     copy_values_from
+    get_rpe_null
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
