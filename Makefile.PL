@@ -25,6 +25,11 @@ WriteMakefile(
   META_MERGE => {
     'meta-spec' => { version => 2 },
     prereqs => {
+      runtime => {
+        requires => {
+          'Data::Alias' => '0',
+        },
+      },
       develop => {
         requires => {
           'Inline::C' => '0.68',
