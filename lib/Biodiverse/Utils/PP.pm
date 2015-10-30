@@ -2,6 +2,8 @@ package Biodiverse::Utils::PP;
 our $VERSION = '1.01';
 use strict; use warnings;
 
+use Data::Alias qw /alias/;
+
 use Exporter 'import';
 our @EXPORT_OK = qw(
     add_hash_keys
@@ -33,5 +35,20 @@ sub add_hash_keys_last_if_exists {
             $dest->{$key} = undef;
         }
     }
+}
+
+sub get_rpe_null {
+    alias my %null_node_len_hash = %{$_[0]};
+    alias my %node_ranges_local  = %{$_[1]};
+    alias my %node_ranges_global = %{$_[2]};
+
+    my $pe_null;
+    
+    foreach my $null_node (keys %node_ranges_global) {
+        $pe_null += $null_node_len_hash{$null_node}
+                  * $node_ranges_local{$null_node}
+                  / $node_ranges_global{$null_node};
+    }
+    return $pe_null;
 }
 
