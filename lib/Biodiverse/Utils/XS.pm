@@ -21,6 +21,7 @@ void add_hash_keys(SV* dest, SV* from) {
     HE* hash_entry;
     int num_keys_from, num_keys_dest, i;
     SV* sv_key;
+    SV* sv_fill_val;
 
     if (! SvROK(dest))
       croak("dest is not a reference");
@@ -31,9 +32,10 @@ void add_hash_keys(SV* dest, SV* from) {
     hash_dest = (HV*)SvRV(dest);
     
     num_keys_from = hv_iterinit(hash_from);
-    // printf ("There are %i keys in hash_from\n", num_keys_from);
-    // num_keys_dest = hv_iterinit(hash_dest);
-    // printf ("There are %i keys in hash_dest\n", num_keys_dest);
+
+    //  Generate one SV and re-use it.
+    //  Could use a global SV?
+    sv_fill_val = newSV(0);
 
     for (i = 0; i < num_keys_from; i++) {
         hash_entry = hv_iternext(hash_from);
@@ -41,16 +43,13 @@ void add_hash_keys(SV* dest, SV* from) {
         //  Could use hv_fetch_ent with the lval arg set to 1.
         //  That will autovivify an undef entry
         //  http://stackoverflow.com/questions/19832153/hash-keys-behavior
-        if (hv_exists_ent (hash_dest, sv_key, 0)) {
-        //    printf ("Found key %s\n", SvPV(sv_key, PL_na));
+        if (!hv_exists_ent (hash_dest, sv_key, 0)) {
+            // printf ("Did not find key %s\n", SvPV(sv_key, PL_na));
+            hv_store_ent(hash_dest, sv_key, SvREFCNT_inc(sv_fill_val), 0);
         }
-        else {
-        //    printf ("Did not find key %s\n", SvPV(sv_key, PL_na));
-            // hv_store_ent(hash_dest, sv_key, &PL_sv_undef, 0);
-            hv_store_ent(hash_dest, sv_key, newSV(0), 0);
-        }
-        // printf ("%i: %s\n", i, SvPV(sv_key, PL_na));
     }
+    SvREFCNT_dec (sv_fill_val);  // avoid mem leak?
+
     return;
 }
 
@@ -129,12 +128,8 @@ void add_hash_keys_last_if_exists (SV* dest, SV* from) {
           // printf ("Found key %s\n", SvPV(*sv_key, PL_na));
           break;
         }
-        else {
-            // hv_store_ent(hash_dest, *sv_key, newSV(0), 0);
-            //  possible mem leakage?
-            hv_store_ent(hash_dest, *sv_key, SvREFCNT_inc(sv_fill_val), 0);
-            // hv_store_ent(hash_dest, *sv_key, sv_fill_val, 0);
-        }
+        //  possible mem leakage?
+        hv_store_ent(hash_dest, *sv_key, SvREFCNT_inc(sv_fill_val), 0);
     }
     SvREFCNT_dec (sv_fill_val);  // avoid mem leak?
     return;
