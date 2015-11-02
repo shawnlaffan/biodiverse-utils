@@ -15,7 +15,10 @@ our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
 );
 
-sub add_hash_keys {}  #  stub for now
+sub add_hash_keys {
+    my ($dest, $from) = @_;
+    @$dest{keys %$from} = undef;
+}
 
 sub copy_values_from {
     my ($dest, $from) = @_;

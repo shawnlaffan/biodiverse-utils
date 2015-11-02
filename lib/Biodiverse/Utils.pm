@@ -8,7 +8,7 @@ our $VERSION = '1.01';
 BEGIN {
     eval 'use Biodiverse::Utils::XS qw /:all/;';
     if ($@) {
-        use Biodiverse::Utils::PP qw /:all/;
+        'use Biodiverse::Utils::PP qw /:all/';
     }
 }
 
