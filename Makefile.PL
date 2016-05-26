@@ -27,7 +27,7 @@ WriteMakefile(
     prereqs => {
       runtime => {
         requires => {
-          'Data::Alias' => '0',
+          #'Data::Alias' => '0',
         },
       },
       develop => {
