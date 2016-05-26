@@ -12,7 +12,7 @@ WriteMakefile(
   VERSION => '1.01',
   ABSTRACT => 'Utilities for Biodiverse, using XS',
   AUTHOR => 'Shawn Laffan <shawnlaffan@gmail.com>',
-  LICENSE => 'lgpl3',
+  LICENSE => 'lgpl_3_0',
   MIN_PERL_VERSION => '5.008001',
   test => { TESTS => 't/*.t' },
   postamble => {
