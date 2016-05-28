@@ -8,6 +8,7 @@ our @EXPORT_OK = qw(
     add_hash_keys_last_if_exists
     copy_values_from
     get_rpe_null
+    get_hash_abc
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
@@ -52,5 +53,19 @@ sub get_rpe_null {
                   / $node_ranges_global->{$null_node};
     }
     return $pe_null;
+}
+
+sub get_hash_abc {
+    my ($h1, $h2) = @_;
+    
+    my %A = (%$h1, %$h2);
+    my %B = %A;
+    my %C = %A;
+    
+    delete @B{keys %$h2};
+    delete @C{keys %$h1};
+    delete @A{(keys %B), (keys %C)};
+
+    return {a => \%A, b => \%B, c => \%C};
 }
 
