@@ -181,8 +181,8 @@ double get_rpe_null (SV* node_lens_ref, SV* local_ranges_ref, SV* global_ranges_
 
 
 // needs a better name
-//SV *
-void get_hash_abc (SV* h1, SV* h2, SV* result_hash_ref) {
+SV *
+get_hash_abc (SV* h1, SV* h2) {
     HV* hash_a;
     HV* hash_b;
     HV* hash_c;
@@ -194,8 +194,8 @@ void get_hash_abc (SV* h1, SV* h2, SV* result_hash_ref) {
     hash_a = newHV();
     hash_b = newHV();
     hash_c = newHV();
-    //result_hash = newHV();
-    
+    result_hash = newHV();
+
     int i;
     SV* sv_key;
     SV* sv_val;
@@ -206,12 +206,9 @@ void get_hash_abc (SV* h1, SV* h2, SV* result_hash_ref) {
       croak("h1 is not a reference");
     if (! SvROK(h2))
       croak("h2 is not a reference");
-    if (! SvROK(result_hash_ref))
-      croak("result_hash_ref is not a reference");
 
     hash1 = (HV*)SvRV(h1);
     hash2 = (HV*)SvRV(h2);
-    result_hash = (HV*)SvRV(result_hash_ref);
 
     num_keys_h1 = hv_iterinit(hash1);
     num_keys_h2 = hv_iterinit(hash2);
@@ -221,8 +218,6 @@ void get_hash_abc (SV* h1, SV* h2, SV* result_hash_ref) {
         hash_entry = hv_iternext(hash1);  
         sv_key = hv_iterkeysv(hash_entry);
         sv_val = newSVsv(HeVAL(hash_entry));
-        //SvREFCNT_inc(sv_val);  // needed?
-        //printf ("%i\n", sv_val);
 
         if (hv_exists_ent (hash2, sv_key, 0)) {
             hv_store_ent(hash_a, sv_key, sv_val, 0);
@@ -247,12 +242,7 @@ void get_hash_abc (SV* h1, SV* h2, SV* result_hash_ref) {
     hv_store_ent(result_hash, newSVpvn("b",1), (SV*) newRV_inc((SV *) hash_b), 0);
     hv_store_ent(result_hash, newSVpvn("c",1), (SV*) newRV_inc((SV *) hash_c), 0);
 
-
-//xxx hv_store_ent(result_hash, newSVpvn('c', 1), newRV_inc((SV *) hash_c), 0);
-
-//    return sv_2mortal((SV*) newRV_noinc((SV *) result_hash));
-//    return newRV_noinc((SV *) result_hash);
-    return;
+    return newRV_noinc((SV *) result_hash);
 }
 
 
