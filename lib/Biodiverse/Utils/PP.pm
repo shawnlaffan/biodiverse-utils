@@ -1,5 +1,5 @@
 package Biodiverse::Utils::PP;
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 use strict; use warnings;
 
 use Exporter 'import';
@@ -8,7 +8,7 @@ our @EXPORT_OK = qw(
     add_hash_keys_until_exists
     copy_values_from
     get_rpe_null
-    get_hash_abc
+    get_hash_shared_and_unique
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
@@ -55,7 +55,7 @@ sub get_rpe_null {
     return $pe_null;
 }
 
-sub get_hash_abc {
+sub get_hash_shared_and_unique {
     my ($h1, $h2) = @_;
     
     my %A = (%$h1, %$h2);
