@@ -26,11 +26,11 @@ cmpthese (
 
 
 sub pp {
-    my $pp_abc = Biodiverse::Utils::PP::get_hash_abc (\%h1, \%h2);
+    my $pp_abc = Biodiverse::Utils::PP::get_hash_shared_and_unique (\%h1, \%h2);
 }
 
 sub xs {
-    my $xs_abc = Biodiverse::Utils::XS::get_hash_abc (\%h1, \%h2);
+    my $xs_abc = Biodiverse::Utils::XS::get_hash_shared_and_unique (\%h1, \%h2);
 }
 
 __END__

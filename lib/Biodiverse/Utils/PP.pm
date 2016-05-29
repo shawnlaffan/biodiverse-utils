@@ -5,7 +5,7 @@ use strict; use warnings;
 use Exporter 'import';
 our @EXPORT_OK = qw(
     add_hash_keys
-    add_hash_keys_last_if_exists
+    add_hash_keys_until_exists
     copy_values_from
     get_rpe_null
     get_hash_abc
@@ -26,7 +26,7 @@ sub copy_values_from {
 
 #  Could use Data::Alias for some speedup here,
 #  but it's best to use the XS version
-sub add_hash_keys_last_if_exists {
+sub add_hash_keys_until_exists {
     my ($dest, $from) = @_; 
     if (!scalar keys %$dest) {
         @$dest{@$from} = undef;

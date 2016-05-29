@@ -5,7 +5,7 @@ use strict; use warnings;
 use Exporter 'import';
 our @EXPORT_OK = qw(
     add_hash_keys
-    add_hash_keys_last_if_exists
+    add_hash_keys_until_exists
     copy_values_from
     get_rpe_null
     get_hash_abc
@@ -96,7 +96,7 @@ void copy_values_from (SV* dest, SV* from) {
 }
 
 // needs a better name
-void add_hash_keys_last_if_exists (SV* dest, SV* from) {
+void add_hash_keys_until_exists (SV* dest, SV* from) {
     HV* hash_dest;
     AV* arr_from;
     int i;

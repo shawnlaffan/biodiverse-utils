@@ -2,7 +2,12 @@
 .bak$
 ^\.git
 \.tar\.gz
-^\.inline
+\.inline
+^benchmark/.inline
 ^blib
 pm_to_blib
 ^Makefile$
+MYMETA.json
+MYMETA.yml
+.travis.yml
+appveyor.yml

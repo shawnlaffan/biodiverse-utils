@@ -112,7 +112,7 @@ sub pp_assign {
     my %combined;
 
     foreach my $path (values %$paths) {
-        Biodiverse::Utils::PP::add_hash_keys_last_if_exists (\%combined, $path);
+        Biodiverse::Utils::PP::add_hash_keys_until_exists (\%combined, $path);
     }
 
     Biodiverse::Utils::PP::copy_values_from (\%combined, \%len_hash);
@@ -126,7 +126,7 @@ sub xs_assign {
     my %combined;
 
     foreach my $path (values %$paths) {
-        Biodiverse::Utils::XS::add_hash_keys_last_if_exists (\%combined, $path);
+        Biodiverse::Utils::XS::add_hash_keys_until_exists (\%combined, $path);
     }
 
     Biodiverse::Utils::XS::copy_values_from (\%combined, \%len_hash);

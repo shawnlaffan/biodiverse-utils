@@ -1,5 +1,8 @@
-.travis.yml
-appveyor.yml
+benchmark/abc.pl
+benchmark/bench_hash_add_keys.pl
+benchmark/bench_hash_add_keys_until_exists.pl
+benchmark/bench_hash_add_keys_with_break.pl
+benchmark/rpe_null.pl
 CHANGES
 lib/Biodiverse/Utils.pm
 lib/Biodiverse/Utils/PP.pm
@@ -9,9 +12,9 @@ LICENSE
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
-MYMETA.json
-MYMETA.yml
 README.md
+t/abc.t
+t/rpe_null.t
 t/test_last_if.t
 xt/01-has_versions.t
 xt/02-versions_all_same.t
