@@ -3,7 +3,7 @@ package Biodiverse::Utils;
 use strict;
 use warnings;
 
-our $VERSION = '1.02';
+our $VERSION = '1.04';
 
 BEGIN {
     eval 'use Biodiverse::Utils::XS qw /:all/;';

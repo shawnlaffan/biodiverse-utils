@@ -1,5 +1,5 @@
 package Biodiverse::Utils::XS;
-our $VERSION = '1.02';
+our $VERSION = '1.04';
 use strict; use warnings;
 
 use Exporter 'import';

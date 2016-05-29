@@ -24,16 +24,16 @@ my $expected = {
 #diag Data::Dumper::Dumper $expected;
 
 
-my $pp_got = Biodiverse::Utils::PP::get_hash_abc (\%hash1, \%hash2);
+my $pp_got = Biodiverse::Utils::PP::get_hash_shared_and_unique (\%hash1, \%hash2);
 
-is_deeply ($pp_got, $expected, 'PP ABC works');
+is_deeply ($pp_got, $expected, 'PP get_hash_shared_and_unique works');
 
 #my $xs_got = {};
-my $xs_got = Biodiverse::Utils::XS::get_hash_abc (\%hash1, \%hash2);
+my $xs_got = Biodiverse::Utils::XS::get_hash_shared_and_unique (\%hash1, \%hash2);
 
 #diag Data::Dumper::Dumper $pp_got;
 
-is_deeply ($xs_got, $expected, 'XS ABC works');
+is_deeply ($xs_got, $expected, 'XS get_hash_shared_and_unique works');
 
 #is_deeply ($xs-got->{a}, $expected->{a}, 'a');
 
