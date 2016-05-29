@@ -1,5 +1,5 @@
 package Biodiverse::Utils::XS;
-our $VERSION = '1.04';
+our $VERSION = '1.05';
 use strict; use warnings;
 
 use Exporter 'import';
@@ -238,9 +238,17 @@ get_hash_shared_and_unique (SV* h1, SV* h2) {
         }
     }
 
-    hv_store_ent(result_hash, newSVpvn("a",1), (SV*) newRV_inc((SV *) hash_a), 0);
-    hv_store_ent(result_hash, newSVpvn("b",1), (SV*) newRV_inc((SV *) hash_b), 0);
-    hv_store_ent(result_hash, newSVpvn("c",1), (SV*) newRV_inc((SV *) hash_c), 0);
+    SV* key_a = newSVpvn("a",1);
+    SV* key_b = newSVpvn("b",1);
+    SV* key_c = newSVpvn("c",1);
+
+    hv_store_ent(result_hash, key_a, (SV*) newRV_noinc((SV *) hash_a), 0);
+    hv_store_ent(result_hash, key_b, (SV*) newRV_noinc((SV *) hash_b), 0);
+    hv_store_ent(result_hash, key_c, (SV*) newRV_noinc((SV *) hash_c), 0);
+
+    SvREFCNT_dec (key_a);
+    SvREFCNT_dec (key_b);
+    SvREFCNT_dec (key_c);
 
     return newRV_noinc((SV *) result_hash);
 }

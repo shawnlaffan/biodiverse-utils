@@ -4,7 +4,7 @@ use List::Util qw /max/;
 use Math::Random::MT::Auto;
 use Test::LeakTrace;
 
-use Biodiverse::Utils::XS;
+use Biodiverse::Utils::XS qw/add_hash_keys_until_exists copy_values_from/;
 
 
 #use rlib;
@@ -59,7 +59,7 @@ sub inline_assign {
     my %combined;
 
     foreach my $path (values %$paths) {
-        add_hash_keys_lastif (\%combined, $path);
+        add_hash_keys_until_exists (\%combined, $path);
     }
 
     copy_values_from (\%combined, \%len_hash);
