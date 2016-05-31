@@ -9,7 +9,7 @@ use Inline::Module;
 
 WriteMakefile(
   NAME => 'Biodiverse::Utils',
-  VERSION => '1.05',
+  VERSION => '1.06',
   ABSTRACT => 'Utilities for Biodiverse, using XS',
   AUTHOR => 'Shawn Laffan <shawnlaffan@gmail.com>',
   LICENSE => 'lgpl_3_0',

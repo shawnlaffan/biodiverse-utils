@@ -1,5 +1,5 @@
 package Biodiverse::Utils::XS;
-our $VERSION = '1.05';
+our $VERSION = '1.06';
 use strict; use warnings;
 
 use Exporter 'import';
@@ -166,16 +166,19 @@ double get_rpe_null (SV* node_lens_ref, SV* local_ranges_ref, SV* global_ranges_
     for (i = 0; i < num_keys_from; i++) {
         he_global_range = hv_iternext(global_range_hash);
         sv_key = hv_iterkeysv(he_global_range);
-        // printf ("Checking key %i: '%s' (%x)\n", i, SvPV(sv_key, PL_na), sv_key);
         
+        gr = SvNV_nomg (HeVAL(he_global_range));
+
         he_node_len    = hv_fetch_ent (node_len_hash, sv_key, 0, 0);
         he_local_range = hv_fetch_ent (local_range_hash, sv_key, 0, 0);
-        nl = SvNV_nomg (HeVAL(he_node_len));
-        lr = SvNV_nomg (HeVAL(he_local_range));
-        gr = SvNV_nomg (HeVAL(he_global_range));
-        rpe_null += gr ? nl * lr / gr : 0;
+
+        if (he_node_len && he_local_range && gr) {
+            nl = SvNV_nomg (HeVAL(he_node_len));
+            lr = SvNV_nomg (HeVAL(he_local_range));
+            rpe_null += nl * lr / gr;
+        }
     }
-    
+
     return rpe_null;
 }
 

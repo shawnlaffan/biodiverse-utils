@@ -3,7 +3,7 @@ package Biodiverse::Utils;
 use strict;
 use warnings;
 
-our $VERSION = '1.05';
+our $VERSION = '1.06';
 
 BEGIN {
     eval 'use Biodiverse::Utils::XS qw /:all/;';
@@ -56,9 +56,11 @@ Biodiverse::Utils - Utilities for the Biodiverse software.
 
 =head1 ABSTRACT
 
-Provides a set of utility functions for the Biodiverse software (L<http://purl.org/biodiverse>).
+Provides a set of utility functions 
+in the Biodiverse software (L<http://purl.org/biodiverse>).
 These are in both XS (using Inline::Module) and pure perl.
-The XS is used by default.  If you want the pure perl then use Biodiverse::Utils::PP.
+The XS is used by default.  If you want the pure perl versions
+(and associated performance bottlenecks) then use Biodiverse::Utils::PP.
 
 =head1 DESCRIPTION
 
@@ -67,10 +69,11 @@ They are not written to be generic, so are likely to
 not work as you want except for simple inputs.
 Any magic is ignored, as are tied data structures.
 
-There are no doubt also a number of egregious steps in the XS code.  
+There is no doubt also a quantum egregiousness in the XS code.  
 
 Error checking is also very basic, possibly to the point of being highly risky.
-Patches welcome.  
+
+Patches are welcome.  
 
 =head1 FUNCTIONS
 
@@ -81,20 +84,26 @@ Patches welcome.
 Any keys in C<$from_hash> not already in C<$dest_hash> are
 added to C<$dest_hash_ref>.
 
-Values are undef, and might in future use the same SV for speed reasons.  
-    
+Values are set to undef, and might in future use the same SV for speed reasons.  
+
+You probably don't want to use this as it is no faster than simply
+adding to a hash using a slice, e.g. C<@h1{keys %h2} = undef>.
+It is also nowhere near as fast as the L<Panda::Lib> hash_merge function,
+but that module fails tests on 64 bit Strawberry Perls
+(at version 1.3).
 
 =item add_hash_keys_until_exists ($dest_hash_ref, $from_array_ref)
 
 Adds each item in C<$from_array_ref> as a new key in C<$dest_hash_ref>,
-stopping when the key exists.
+stopping at the first key that exists in $dest_hash_ref.
 
-This is useful for tree data structures when adding branches along a
-path from the tips to the root, and internal branches are already
-in $dest_hash due to a previous call.
+This is useful for tree data structures when collating branches along a
+set of paths from the tips to the root.  Most paths converge somewhere along
+the way to the root, so assigning using a slice will repeatedly add
+internal branches that are already in $dest_hash from preceding paths.
 
-Note that the values of the new hash keys are the same SV for each call 
-(but not across calls).  This means that if C<$dest_hash_ref->{a}> and
+Note that the value for any new hash keys uses the same SV for each call 
+(but not across calls).  This means that, if C<$dest_hash_ref->{a}> and
 C<$dest_hash_ref->{b}> are added, then calling C<$dest_hash_ref->{a}++>
 will also increment C<$dest_hash_ref->{b}>.  This is done for speed reasons,
 and you are best to overwrite the values in a later step using, for example,
@@ -111,25 +120,28 @@ C<@dest_hash{keys %dest_hash} = @from_hash{keys %dest_hash}>
 
 =item get_rpe_null (\%node_lengths, \%local_ranges, \%global_ranges)
 
-Calculate the null score for Relative Phylogenetic Endemism.
-It is the sum of the lengths times the local ranges divided by
-the global ranges (=sum(len * lr / gr)).
+Calculate the null score for the Relative Phylogenetic Endemism index
+used in Mishler et al. (2014) L<http://dx.doi.org/10.1038/ncomms5473>.
 
-The XS version is twice as fast as the pure perl version.
+This is the sum of a set of branch lengths times their local ranges divided by
+their global ranges (rpe_null = sum (len * lr / gr)).
 
-Searches all keys in %global_ranges, and does not check if
-they do not exist in the other hashes.  If so then bad things will happen.
+The XS version is about twice as fast as the pure perl version.
+
+Searches all keys in %global_ranges, skipping any divide by zero cases.
 
 =item get_hash_shared_and_unique (\%h1, \%h2)
 
 Identifies which keys in two hashes are common, and which are unique to
-%h1 and %h2.
+%h1 and to %h2.
 
 The result is a hashref where the "a" subhash contains the set of common keys,
 "b" contains the set of keys unique to %h1, and "c" contains the set of keys unique to %h2.
 
-The values of the subhashes are the same as in the inputs,
-but values in %h1 will override those in %h2.
+The values of the resultant subhashes are the same as the input hashes,
+except that values in %h1 will override those in %h2 in the "a" subhash.
+
+This sub could do with a better name.
 
 =back
 
