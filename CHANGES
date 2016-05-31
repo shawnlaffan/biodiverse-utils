@@ -1,6 +1,6 @@
 Revision history for Biodiverse::Utils.
 
-1.04 2016-05-29
+1.05 2016-05-29
     - Add get_rpe_null and get_hash_shared_and_unique
 
 1.01 2015-10-28
