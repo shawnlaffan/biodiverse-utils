@@ -264,25 +264,21 @@ get_param (SV* self, SV* param_name) {
     SV* params_hash_ref;
     HV* params_hash;
     HE* hash_entry;
-    SV* param_val;
 
     if (! SvROK(self))
       croak("self is not a reference");
 
-    SV* PARAMS_HASHKEY = newSVpvn("PARAMS", 6);
+    const SV* PARAMS_HASHKEY = newSVpvn("PARAMS", 6);
     
-    self_hash = (HV*)SvRV(self);
-
-    if (hv_exists_ent (self_hash, PARAMS_HASHKEY, 0)) {
-        hash_entry = hv_fetch_ent(self_hash, PARAMS_HASHKEY, 0, 0);
+    hash_entry = hv_fetch_ent((HV*)SvRV(self), PARAMS_HASHKEY, 0, 0);
+    if (hash_entry) {
         params_hash_ref = HeVAL(hash_entry);
-        if (SvROK(params_hash_ref)) {
-            params_hash = (HV*)SvRV(params_hash_ref);
-            if (hv_exists_ent (params_hash, param_name, 0)) {
-                param_val = HeVAL(hv_fetch_ent(params_hash, param_name, 0, 0));
-                return (SvREFCNT_inc(param_val));
+        //if (SvROK(params_hash_ref)) {
+            hash_entry = hv_fetch_ent((HV*)SvRV(params_hash_ref), param_name, 0, 0);
+            if (hash_entry) {
+                return (SvREFCNT_inc(HeVAL(hash_entry)));
             }
-        }
+        //}
     }
 
     return (&PL_sv_undef);
