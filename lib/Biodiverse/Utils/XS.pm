@@ -9,6 +9,7 @@ our @EXPORT_OK = qw(
     copy_values_from
     get_rpe_null
     get_hash_shared_and_unique
+    get_param
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
@@ -254,6 +255,37 @@ get_hash_shared_and_unique (SV* h1, SV* h2) {
     SvREFCNT_dec (key_c);
 
     return newRV_noinc((SV *) result_hash);
+}
+
+
+SV *
+get_param (SV* self, SV* param_name) {
+    HV* self_hash;
+    SV* params_hash_ref;
+    HV* params_hash;
+    HE* hash_entry;
+    SV* param_val;
+
+    if (! SvROK(self))
+      croak("self is not a reference");
+
+    SV* PARAMS_HASHKEY = newSVpvn("PARAMS", 6);
+    
+    self_hash = (HV*)SvRV(self);
+
+    if (hv_exists_ent (self_hash, PARAMS_HASHKEY, 0)) {
+        hash_entry = hv_fetch_ent(self_hash, PARAMS_HASHKEY, 0, 0);
+        params_hash_ref = HeVAL(hash_entry);
+        if (SvROK(params_hash_ref)) {
+            params_hash = (HV*)SvRV(params_hash_ref);
+            if (hv_exists_ent (params_hash, param_name, 0)) {
+                param_val = HeVAL(hv_fetch_ent(params_hash, param_name, 0, 0));
+                return (SvREFCNT_inc(param_val));
+            }
+        }
+    }
+
+    return (&PL_sv_undef);
 }
 
 

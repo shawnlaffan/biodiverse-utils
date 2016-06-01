@@ -1,6 +1,7 @@
 package Biodiverse::Utils::PP;
 our $VERSION = '1.06';
 use strict; use warnings;
+use autovivification;
 
 use Exporter 'import';
 our @EXPORT_OK = qw(
@@ -9,10 +10,16 @@ our @EXPORT_OK = qw(
     copy_values_from
     get_rpe_null
     get_hash_shared_and_unique
+    get_param
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
 );
+
+sub get_param {
+    no autovivification;
+    $_[0]->{PARAMS}{$_[1]};
+}
 
 sub add_hash_keys {
     my ($dest, $from) = @_;

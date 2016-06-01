@@ -27,6 +27,7 @@ WriteMakefile(
     prereqs => {
       runtime => {
         requires => {
+          autovivification => 0.16,
           #'Data::Alias' => '0',
         },
       },
