@@ -41,6 +41,7 @@ WriteMakefile(
         requires => {
           'List::Util' => '0',
           'Test::More' => '0',
+          'Test::Most' => '0',
         },
         suggests => {
           'Test::LeakTrace'     => '0',
