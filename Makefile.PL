@@ -27,7 +27,8 @@ WriteMakefile(
     prereqs => {
       runtime => {
         requires => {
-          #'Data::Alias' => '0',
+          'Carp' => '0',
+          'List::Util' => '0',
         },
       },
       develop => {
