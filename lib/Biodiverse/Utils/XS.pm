@@ -9,6 +9,7 @@ our @EXPORT_OK = qw(
     copy_values_from
     get_rpe_null
     get_hash_shared_and_unique
+    get_bnok_ratio
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
@@ -256,6 +257,51 @@ get_hash_shared_and_unique (SV* h1, SV* h2) {
     return newRV_noinc((SV *) result_hash);
 }
 
+double
+get_bnok_ratio (SV* sv_n, SV* sv_m, SV* sv_p) {
+
+//    croak "m > n or n > p" if $m > min ($n, $p);
+
+    long numer, denom, nmax, dmax, i;
+    long n, m, p;
+    double ratio;
+    n = SvIV_nomg (sv_n);
+    p = SvIV_nomg (sv_p);
+    m = SvIV_nomg (sv_m);
+
+    // printf ("Running %i %i %i\n", n, p, m);
+    
+    numer = p-m+1;
+    nmax  = ((n-m) > p) ? n-m : p;
+    denom = (n-m > p)   ? p+1 : n-m+1;
+    dmax  = n;
+
+    // printf ("numer nmax denom dmax\n%i %i %i %i\n", numer, nmax, denom, dmax);
+
+    
+    ratio = 1.0;
+    //  divide as we go to avoid numeric overflow
+    while ( numer <= nmax && denom <= dmax ) {
+        ratio *= numer / (double) denom;
+        // printf ("%f ", ratio);
+        numer++;
+        denom++;
+    }
+    // printf ("\n");
+    //  handle any leftovers
+    if (numer <= nmax) {
+        for (i = numer; i <= nmax; i++) {
+            ratio *= (double) i;
+        }
+    }
+    else if (denom <= nmax) {
+        for (i = denom; i <= dmax; i++ ) {
+            ratio /= (double) i;
+        }
+    }
+
+    return (ratio);
+}
 
 ...
 
