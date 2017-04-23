@@ -258,16 +258,12 @@ get_hash_shared_and_unique (SV* h1, SV* h2) {
 }
 
 double
-get_bnok_ratio (SV* sv_n, SV* sv_m, SV* sv_p) {
+get_bnok_ratio (double n, double m, double p) {
 
 //    croak "m > n or n > p" if $m > min ($n, $p);
 
     long numer, denom, nmax, dmax, i;
-    long n, m, p;
     double ratio;
-    n = SvIV_nomg (sv_n);
-    p = SvIV_nomg (sv_p);
-    m = SvIV_nomg (sv_m);
 
     // printf ("Running %i %i %i\n", n, p, m);
     
