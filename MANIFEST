@@ -14,6 +14,7 @@ MANIFEST
 MANIFEST.SKIP
 README.md
 t/abc.t
+t/bnok_ratio.t
 t/rpe_null.t
 t/test_last_if.t
 xt/01-has_versions.t
@@ -26,3 +27,4 @@ xt/07-notabs.t
 xt/09-use_strict.t
 xt/10-changes_format.t
 xt/last_if_mem_leaks.t
+xt/mem_leaks_get_hash_shared_and_unique.t

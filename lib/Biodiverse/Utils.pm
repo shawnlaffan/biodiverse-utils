@@ -19,6 +19,7 @@ our @EXPORT_OK = qw(
     copy_values_from
     get_rpe_null
     get_hash_shared_and_unique
+    get_bnok_ratio
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,

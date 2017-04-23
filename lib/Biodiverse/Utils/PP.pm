@@ -2,6 +2,9 @@ package Biodiverse::Utils::PP;
 our $VERSION = '1.06';
 use strict; use warnings;
 
+use List::Util qw /min max/;
+use Carp;
+
 use Exporter 'import';
 our @EXPORT_OK = qw(
     add_hash_keys
@@ -9,6 +12,7 @@ our @EXPORT_OK = qw(
     copy_values_from
     get_rpe_null
     get_hash_shared_and_unique
+    get_bnok_ratio
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
@@ -69,3 +73,30 @@ sub get_hash_shared_and_unique {
     return {a => \%A, b => \%B, c => \%C};
 }
 
+sub get_bnok_ratio {
+    my ($n, $m, $p) = @_;
+
+    croak "m > n or n > p" if $m > min ($n, $p);
+
+    my $numer = ($p-$m+1);
+    my $nmax  = min (($n-$m), $p);
+    my $denom = max ($n-$m, $p) + 1;
+    my $dmax  = $n;
+    
+    my $ratio = 1;
+    #  divide as we go to avoid numeric overflow
+    while ( $numer <= $nmax and $denom <= $dmax ) {
+        $ratio *= $numer / $denom;
+        $numer++;
+        $denom++;
+    }
+    #  handle any leftovers
+    if ($numer <= $nmax) {
+        $ratio *= product ($numer .. $nmax);
+    }
+    elsif ($denom <= $nmax) {
+        $ratio /= product ($denom .. $dmax);
+    }
+
+    return $ratio;
+}
