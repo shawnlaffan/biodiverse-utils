@@ -16,9 +16,9 @@ before_install:
   - cpanm -n `cpanm --installdeps --showdeps --with-develop . | grep -v '^perl' | grep -v Configuring | grep -v 'Working'`
 #install:
 #  - perl Makefile.PL && make && make test && make install && make clean
-branches:
-  except:
-    - /^wip\//
-    - /^blocked/
-  only:
-    - master
+#branches:
+#  except:
+#    - /^wip\//
+#    - /^blocked/
+#  only:
+#    - master
