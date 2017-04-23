@@ -8,18 +8,18 @@ use ExtUtils::MakeMaker;
 use Inline::Module;
 
 WriteMakefile(
-  NAME => 'Biodiverse::Utils',
-  VERSION => '1.06',
+  NAME     => 'Biodiverse::Utils',
+  VERSION_FROM => 'lib/Biodiverse/Utils.pm',
   ABSTRACT => 'Utilities for Biodiverse, using XS',
-  AUTHOR => 'Shawn Laffan <shawnlaffan@gmail.com>',
-  LICENSE => 'lgpl_3_0',
+  AUTHOR   => 'Shawn Laffan <shawnlaffan@gmail.com>',
+  LICENSE  => 'lgpl_3_0',
   MIN_PERL_VERSION => '5.008001',
   test => { TESTS => 't/*.t' },
   postamble => {
     inline => {
-      module => 'Biodiverse::Utils::XS',
+      module   => 'Biodiverse::Utils::XS',
       makestub => 1,
-      ilsm => 'Inline::C',
+      ilsm     => 'Inline::C',
     },
   },
   META_MERGE => {
@@ -33,7 +33,7 @@ WriteMakefile(
       },
       develop => {
         requires => {
-          'Inline::C' => '0.68',
+          'Inline::C'      => '0.68',
           'Inline::Module' => '0.31',
         },
       },
@@ -43,8 +43,8 @@ WriteMakefile(
           'Test::More' => '0',
         },
         suggests => {
-          'Test::LeakTrace'  => '0',
-          'Test::NoTabs' => '0',
+          'Test::LeakTrace'     => '0',
+          'Test::NoTabs'        => '0',
           'Test::CheckManifest' => '0',
         },
       },

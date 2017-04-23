@@ -3,7 +3,7 @@ package Biodiverse::Utils;
 use strict;
 use warnings;
 
-our $VERSION = '1.06';
+our $VERSION = '1.07';
 
 BEGIN {
     eval 'use Biodiverse::Utils::XS qw /:all/;';
@@ -137,12 +137,21 @@ Identifies which keys in two hashes are common, and which are unique to
 %h1 and to %h2.
 
 The result is a hashref where the "a" subhash contains the set of common keys,
-"b" contains the set of keys unique to %h1, and "c" contains the set of keys unique to %h2.
+"b" contains the set of keys unique to %h1,
+and "c" contains the set of keys unique to %h2.
 
 The values of the resultant subhashes are the same as the input hashes,
 except that values in %h1 will override those in %h2 in the "a" subhash.
 
 This sub could do with a better name.
+
+=item get_bnok_ratio ($n, $m, $p)
+
+Calculate the ratio of two n-choose-k calculations,
+avoiding any factorials and the need for bignums along the way.
+In Math::BigNum parlance, it is C<< $n->bnok($m) / $p->bnok($m) >>.
+The XS version is more than 3000% faster than using Math::BigNum,
+and the PP version >450% faster than using Math::BigNum.
 
 =back
 

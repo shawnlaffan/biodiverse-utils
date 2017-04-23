@@ -1,7 +1,5 @@
 benchmark/abc.pl
 benchmark/bench_hash_add_keys.pl
-benchmark/bench_hash_add_keys_until_exists.pl
-benchmark/bench_hash_add_keys_with_break.pl
 benchmark/rpe_null.pl
 CHANGES
 lib/Biodiverse/Utils.pm
