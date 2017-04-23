@@ -76,7 +76,8 @@ sub get_hash_shared_and_unique {
 sub get_bnok_ratio {
     my ($n, $m, $p) = @_;
 
-    croak "m > n or n > p" if $m > min ($n, $p);
+    croak "m > n or n > p or n <= 0"
+      if $n <= 0 || $m > $n || $m > $p;
 
     my $numer = ($p-$m+1);
     my $nmax  = min (($n-$m), $p);

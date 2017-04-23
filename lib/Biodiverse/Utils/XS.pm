@@ -260,10 +260,12 @@ get_hash_shared_and_unique (SV* h1, SV* h2) {
 double
 get_bnok_ratio (double n, double m, double p) {
 
-//    croak "m > n or n > p" if $m > min ($n, $p);
+    if (m > n || m > p || n <= 0) {
+        croak ("invalid args passed to get_bnok_ratio (%i, %i, %i)", m, n, p);
+    }
 
-    long numer, denom, nmax, dmax, i;
-    double ratio;
+    long nmax, dmax, i;
+    double ratio, denom, numer;
 
     // printf ("Running %i %i %i\n", n, p, m);
     
@@ -278,7 +280,7 @@ get_bnok_ratio (double n, double m, double p) {
     ratio = 1.0;
     //  divide as we go to avoid numeric overflow
     while ( numer <= nmax && denom <= dmax ) {
-        ratio *= numer / (double) denom;
+        ratio *= numer / denom;
         // printf ("%f ", ratio);
         numer++;
         denom++;

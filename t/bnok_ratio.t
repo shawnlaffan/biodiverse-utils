@@ -1,4 +1,5 @@
 use Test::More;
+use Test::Most;
 
 use Biodiverse::Utils::XS;
 use Biodiverse::Utils::PP;
@@ -21,6 +22,21 @@ foreach my $set (@expected) {
     #diag $pp;
     ok (abs ($exp - $xs) < $tol, "xs for $n, $m, $p");
     #diag $xs;
+}
+
+
+my @croakers = (
+    {n => -1,  p => -13, m => -103},
+    {n => -10, p =>  13, m =>    3},
+    {n =>  10, p =>  13, m =>  103},
+    {n =>  10, p =>   1, m =>    3},
+);
+
+foreach my $set (@croakers) {
+    my ($n, $p, $m, $exp) = @$set{qw /n p m exp/};
+    my $text = "croak n=$n,m=$m,p=$p";
+    dies_ok {Biodiverse::Utils::PP::get_bnok_ratio ($n, $m, $p)} "pp $text";
+    dies_ok {Biodiverse::Utils::XS::get_bnok_ratio ($n, $m, $p)} "xs $text";
 }
 
 
