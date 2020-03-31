@@ -13,6 +13,7 @@ our @EXPORT_OK = qw(
     get_rpe_null
     get_hash_shared_and_unique
     get_bnok_ratio
+    get_bnok_ratio_lgamma
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
@@ -100,4 +101,10 @@ sub get_bnok_ratio {
     }
 
     return $ratio;
+}
+
+sub get_bnok_ratio_lgamma {
+    my ($n, $m, $p, $lgamma) = @_;
+    print "$n $m $p\n";
+    return scalar exp(($lgamma->[$n-$m] - $lgamma->[$p-$m]) - ($lgamma->[$n] - $lgamma->[$p]));
 }

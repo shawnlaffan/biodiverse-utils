@@ -20,10 +20,22 @@ our @EXPORT_OK = qw(
     get_rpe_null
     get_hash_shared_and_unique
     get_bnok_ratio
+    get_bnok_ratio_lgamma
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
 );
+
+our @lgamma;
+our @big_gamma;
+BEGIN {
+    @lgamma = (0, 0);
+    foreach my $i (3..10000) {
+        push @lgamma, log ($i-1 or 1) + $lgamma[-1];
+    }
+    #  indexing is off by one to avoid redundant additions in calls
+}
+
 
 1;
 

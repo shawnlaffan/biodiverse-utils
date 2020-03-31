@@ -13,15 +13,30 @@ my @expected = (
     {n => 509, p => 509 - 13, m => 79,  exp => 0.108469763182597},
 );
 
-my $tol = 1e-14;
+our @lgamma;
+BEGIN {
+    @lgamma = (0, 0);
+    foreach my $i (3..10000) {
+        push @lgamma, log ($i-1 or 1) + $lgamma[-1];
+    }
+    #  indexing is off by one to avoid redundant additions in calls
+}
+
+my $tol = 1e-10;
 foreach my $set (@expected) {
     my ($n, $p, $m, $exp) = @$set{qw /n p m exp/};
     my $pp = Biodiverse::Utils::PP::get_bnok_ratio ($n, $m, $p);
     my $xs = Biodiverse::Utils::XS::get_bnok_ratio ($n, $m, $p);
-    ok (abs ($exp - $pp) < $tol, "pp for $n, $p, $m, $p is $exp");
+    ok (abs ($exp - $pp) < $tol, "pp for $n, $m, $p is $exp");
     #diag $pp;
-    ok (abs ($exp - $xs) < $tol, "xs for $n, $m, $p");
+    ok (abs ($exp - $xs) < $tol, "xs for $n, $m, $p is $exp");
     #diag $xs;
+    my $lpp = Biodiverse::Utils::PP::get_bnok_ratio_lgamma ($n, $m, $p, \@lgamma);
+    #diag "lpp $lpp";
+    my $lxs = Biodiverse::Utils::XS::get_bnok_ratio_lgamma ($n, $m, $p, \@lgamma);
+    #diag "lxs $lxs";
+    ok (abs ($exp - $lpp) < $tol, "lpp for $n, $m, $p is $exp");
+    ok (abs ($exp - $lxs) < $tol, "lxs for $n, $m, $p is $exp");
 }
 
 

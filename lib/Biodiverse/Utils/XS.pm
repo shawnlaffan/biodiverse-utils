@@ -10,6 +10,7 @@ our @EXPORT_OK = qw(
     get_rpe_null
     get_hash_shared_and_unique
     get_bnok_ratio
+    get_bnok_ratio_lgamma
 );
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
@@ -260,6 +261,9 @@ get_hash_shared_and_unique (SV* h1, SV* h2) {
 double
 get_bnok_ratio (double n, double m, double p) {
 
+    if (m == 1) {
+        return p / n;
+    }
     if (m > n || m > p || n <= 0) {
         croak ("invalid args passed to get_bnok_ratio (%i, %i, %i)", m, n, p);
     }
@@ -299,6 +303,31 @@ get_bnok_ratio (double n, double m, double p) {
     }
 
     return (ratio);
+}
+
+double
+get_bnok_ratio_lgamma (long n, long m, long p, SV* lgamma) {
+    AV* lgamma_arr;
+    if (! SvROK(lgamma))
+      croak("lgamma is not a reference");
+    lgamma_arr = (AV*)SvRV(lgamma);
+    SV** n1;
+    SV** n2;
+    SV** d1;
+    SV** d2;
+    n1 = av_fetch(lgamma_arr, n-m, 0);
+    n2 = av_fetch(lgamma_arr, p-m, 0);
+    d1 = av_fetch(lgamma_arr, n, 0);
+    d2 = av_fetch(lgamma_arr, p, 0);
+
+    //printf ("%.6f %.6f %.6f %.6f\n", SvNV_nomg(*n1), SvNV_nomg(*n2), SvNV_nomg(*d1), SvNV_nomg(*d2));
+    //printf ("XXXX %.6f\n", SvNV_nomg(*n1));
+    //printf ("XXXX %.6f\n", SvNV_nomg(*n2));
+    //printf ("XXXX %.6f\n", SvNV_nomg(*d1));
+    //printf ("XXXX %.6f\n", SvNV_nomg(*d2));
+    //printf ("YYYY %s\n", SvPV(*n1, PL_na));
+    return (exp((SvNV_nomg(*n1) - SvNV_nomg(*n2)) - (SvNV_nomg(*d1) - SvNV_nomg(*d2))));
+    //return (1);
 }
 
 ...
