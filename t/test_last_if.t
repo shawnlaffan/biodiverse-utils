@@ -9,6 +9,7 @@ local $| = 1;
 
 my $n = 20;   #  depth of the paths
 my $m = 1800;  #  number of paths
+#$m = 500;
 my $r = $n - 1;    #  how far to be the same until (irand)
 my $subset_size = int ($m/4);
 my %path_arrays;  #  ordered keys
@@ -46,6 +47,13 @@ is_deeply ($slice2, \%len_hash, 'slice2 results are the same');
 is_deeply ($forled, \%len_hash, 'forled results are the same');
 is_deeply ($inline, \%len_hash, 'inline results are the same');
 
+#  now the Array of Arrays
+my $inline_AoA = xs_assign_AoA (\%path_arrays);
+is_deeply ($inline_AoA, \%len_hash, 'inline results are the same');
+
+use Data::Printer;
+#p $inline_AoA;
+#p $inline;
 
 done_testing;
 
@@ -131,6 +139,20 @@ sub xs_assign {
 
     Biodiverse::Utils::XS::copy_values_from (\%combined, \%len_hash);
 
+    return \%combined;
+}
+
+sub xs_assign_AoA {
+    my $paths = shift;
+
+    my %combined;
+    my $aref = [@$paths{sort keys %$paths}];  #  sorted to be reproducible
+#p $aref;
+    Biodiverse::Utils::XS::add_hash_keys_until_exists_AoA (\%combined, $aref);
+#say STDERR join ' ', sort keys %combined;
+    Biodiverse::Utils::XS::copy_values_from (\%combined, \%len_hash);
+#say STDERR join ' ', sort keys %combined;
+#say STDERR "DONE";
     return \%combined;
 }
 

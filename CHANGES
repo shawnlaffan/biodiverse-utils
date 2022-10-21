@@ -1,5 +1,11 @@
 Revision history for Biodiverse::Utils.
 
+1.07 2022-10-21
+    - Add add_hash_keys_until_exists_AoA
+    
+1.06 ??
+    - Add add_hash_keys_until_exists, or was it already there?
+
 1.05 2016-05-29
     - Add get_rpe_null and get_hash_shared_and_unique
 

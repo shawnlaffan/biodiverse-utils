@@ -6,6 +6,7 @@ use Exporter 'import';
 our @EXPORT_OK = qw(
     add_hash_keys
     add_hash_keys_until_exists
+    add_hash_keys_until_exists_AoA
     copy_values_from
     get_rpe_null
     get_hash_shared_and_unique
@@ -132,6 +133,63 @@ void add_hash_keys_until_exists (SV* dest, SV* from) {
         }
         //  possible mem leakage?
         hv_store_ent(hash_dest, *sv_key, SvREFCNT_inc(sv_fill_val), 0);
+    }
+    SvREFCNT_dec (sv_fill_val);  // avoid mem leak?
+    return;
+}
+
+
+// also needs a better name
+void add_hash_keys_until_exists_AoA (SV* dest, SV* from) {
+    HV* hash_dest;
+    AV* arr_from;
+    int i, j;
+    SV* sv_key;
+    SV* sv_fill_val;
+    int num_keys_from;
+    int num_arrays;
+    AV* this_arr;
+ 
+    if (! SvROK(dest))
+      croak("dest is not a reference");
+    if (! SvROK(from))
+      croak("from is not a reference");
+
+    arr_from  = (AV*)SvRV(from);
+    hash_dest = (HV*)SvRV(dest);
+
+    num_arrays = av_len (arr_from);
+    // printf ("There are %i arrays to process\n", num_arrays);
+
+    //  Generate one SV and re-use it.
+    //  Need to warn in docs that it is the same SV for all assigned vals,
+    //  so change one means change all.
+    //  Could use a global SV?
+    sv_fill_val = newSV(0);
+
+    for (j = 0; j <= num_arrays; j++) {
+        
+        SV **this_arr_ref = av_fetch(arr_from, j, 0);
+        
+        if (SvTYPE(SvRV(*this_arr_ref)) == SVt_PVAV) {
+            
+            this_arr = (AV*)SvRV(*this_arr_ref);
+        
+            num_keys_from = av_len (this_arr);
+            // printf ("There are %i keys in from list %i\n", num_keys_from+1, j);
+        
+            //  could use a while loop with condition being the key does not exist in dest?
+            for (i = 0; i <= num_keys_from; i++) {
+                SV **sv_key = av_fetch(this_arr, i, 0);  //  cargo culted from List::MoreUtils::insert_after
+                // printf ("Checking key %s\n", SvPV(*sv_key, PL_na));
+                if (hv_exists_ent (hash_dest, *sv_key, 0)) {
+                  // printf ("Found key %s\n", SvPV(*sv_key, PL_na));
+                  break;
+                }
+                //  possible mem leakage?
+                hv_store_ent(hash_dest, *sv_key, SvREFCNT_inc(sv_fill_val), 0);
+            }
+        }
     }
     SvREFCNT_dec (sv_fill_val);  // avoid mem leak?
     return;
