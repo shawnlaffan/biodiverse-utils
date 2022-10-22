@@ -1,59 +1,85 @@
+use 5.026;
+use strict;
+use warnings;
+
 
 use Benchmark qw {:all};
-use 5.016;
 
-#use Panda::Lib qw /hash_merge/;  #  does not work on windows
 use Test2::V0;
 
 use Data::Printer;
+
+#use rlib;
+use blib;
+use PDL::PDLness;
 
 use Biodiverse::Utils::XS;
 use Biodiverse::Utils::PP;
 
 use Math::Random::MT::Auto;
 
-my $prng4 = Math::Random::MT::Auto->new(seed => 222);
+my $prng4 = Math::Random::MT::Auto->new(seed => 4222);
 
+use List::Util qw /max/;
 
 $| = 1;
-
-#  grow a bifurcating tree
-my @names = 'a' .. 'zzzzz';
+my $run_comp = -3;
 
 my @node_counts = (10, 100, 500, 1000);
-@node_counts = (100);
+@node_counts = (50000);
+my $starter = 'a';
+my @names = map {++$starter} (0 .. max (@node_counts)+20);
+#say join ' ', @names;
 
 foreach my $node_count (@node_counts) {
     print "\nCount is $node_count\n";
 
-    my $paths = generate_paths ($node_count);
+    #  grow a bifurcating tree
+    my ($paths, $node_num_hash) = generate_paths ($node_count);
 
-    my @key_lists = $prng4->shuffle ($paths);
-    p @key_lists;
+    my $max = List::Util::max(values %$node_num_hash);
+    ($_ = $max - $_) for values %$node_num_hash;
+    my $node_num_hash_by_idx = {reverse %$node_num_hash};
+    #p $node_num_hash;
 
-    my $hash_crash = hash_crash (\@key_lists);
-    my $last_if    = last_if (\@key_lists);
-    my $xs         = xs (\@key_lists);
-    my $pp         = pp (\@key_lists);
+    my $key_lists = $prng4->shuffle ($paths);
+    #  knock out 10%
+    shift @$key_lists for (0 .. int (0.3 * @$key_lists));
+    say sprintf "Operating on %d paths", scalar @$key_lists;
+    my $len_sum;
+    $len_sum += @$_ for @$key_lists;
+    say sprintf ("Average path length: %f", $len_sum / scalar @$key_lists);
+    #$key_lists = [@$key_lists[0..2]];
+    #p $key_lists;
 
-    is ($xs, $last_if, "xs and next_if match");
+    my $hash_crash = hash_crash ($key_lists);
+    my $last_if    = last_if ($key_lists);
+    my $xs         = xs ($key_lists);
+    my $pp         = pp ($key_lists);
+    my $pdl_loop   = pdl_loop($key_lists, $node_num_hash, $node_num_hash_by_idx);
+
+    is ($xs, $pdl_loop,   "xs and pdl_loop match");
+    is ($xs, $last_if,    "xs and next_if match");
     is ($xs, $hash_crash, "xs and hash_crash match");
-    is ($xs, $pp, "xs and pp match");
+    is ($xs, $pp,         "xs and pp match");
 
     #printf "%12s%8d\n", "hash_crash:", scalar keys %$hash_crash;
     #printf "%12s%8d\n", "last_if:", scalar keys %$hash_crash;
     #printf "%12s%8d\n", "pp:", scalar keys %$pp;
     #printf "%12s%8d\n", "xs:", scalar keys %$xs;
 
-    cmpthese (
-        -3,
-        {
-            hash_crash => sub {hash_crash(\@key_lists)},
-            last_if    => sub {last_if(\@key_lists)},
-            xs         => sub {xs(\@key_lists)},
-            pp         => sub {pp(\@key_lists)},
-        }
-    );
+    if ($run_comp) {
+        cmpthese (
+            $run_comp,
+            {
+                hash_crash => sub {hash_crash($key_lists)},
+                last_if    => sub {last_if($key_lists)},
+                xs         => sub {xs($key_lists)},
+                pp         => sub {pp($key_lists)},
+                pdl_loop   => sub {pdl_loop ($key_lists, $node_num_hash, $node_num_hash_by_idx)},
+            }
+        );
+    }
 }
 
 done_testing();
@@ -62,6 +88,10 @@ sub generate_paths {
     my $n = shift // 2000;
 
     my %tree;
+    my %node_num_hash = (
+        $names[1] => 1,
+        $names[0] => 0,
+    );
     my %parent_hash = ($names[1] => $names[0]);
     my @children = (1);
     while (defined (my $i = shift @children)) {
@@ -72,6 +102,7 @@ sub generate_paths {
         $tree{$names[$i]} = [@names[@current]];
         $tree{$names[$current[0]]} = [];
         $tree{$names[$current[1]]} = [];
+        @node_num_hash{$names[$current[0]], $names[$current[1]]} = @current;
         #say join ' ', @current;
         last if keys %parent_hash >= $n;
     }
@@ -97,7 +128,7 @@ sub generate_paths {
     #p @paths_to_root;
     say "Generated " . scalar @paths_to_root . " paths";
 
-    return (\@paths_to_root);
+    return (\@paths_to_root, \%node_num_hash);
 }
 
 
@@ -154,92 +185,37 @@ sub last_if {
 }
 
 
-__END__
+sub pdl_loop {
+    my ($key_lists, $node_num_hash, $node_num_hash_by_idx) = @_;
 
-perl 5.20.0, centos linux box
+    use PDL::Lite;
+    use PDL::Core qw(pdl zeroes);
+    use PDL::NiceSlice;
 
-perl bench_hash_merger_panda.pl
+    my $boolean = PDL->zeroes(PDL::byte(), scalar keys %$node_num_hash);
+    say $boolean if !$run_comp;
+    
+    state %cache;
+    
+    #p $node_num_hash;
+    
+    foreach my $path (@$key_lists) {
+        my $index_pdl = $cache{$path->[0]} //= PDL::indx([@$node_num_hash{@$path}]);
+        PDL::PDLness::loopdeloop ($index_pdl, $boolean);
+        #$boolean($index_pdl) .= 1 
+    }
+    say $boolean if !$run_comp;
+    my $which = PDL::which ($boolean);
+    say $which if !$run_comp;
+    (say join ' ', @{$which->unpdl}) if !$run_comp;
+    my %path;
+    @path{@$node_num_hash_by_idx{@{$which->unpdl}}} = ();
+    (say join ' ', reverse sort keys %path) if !$run_comp;
+    return \%path;
+}
 
-Check count is 10
-ok 1 - panda and grep_first match
-ok 2 - panda and next_if match
-ok 3 - panda and hash_crash match
-      panda:    1001
- grep_first:    1001
- hash_crash:    1001
-    next_if:    1001
-             Rate    next_if grep_first hash_crash      panda
-next_if    2574/s         --        -6%       -31%       -59%
-grep_first 2749/s         7%         --       -27%       -56%
-hash_crash 3751/s        46%        36%         --       -40%
-panda      6208/s       141%       126%        65%         --
 
-Check count is 50
-ok 4 - panda and grep_first match
-ok 5 - panda and next_if match
-ok 6 - panda and hash_crash match
-      panda:    1041
- grep_first:    1041
- hash_crash:    1041
-    next_if:    1041
-             Rate    next_if grep_first hash_crash      panda
-next_if     797/s         --       -16%       -34%       -59%
-grep_first  954/s        20%         --       -21%       -51%
-hash_crash 1206/s        51%        26%         --       -38%
-panda      1934/s       143%       103%        60%         --
 
-Check count is 100
-ok 7 - panda and grep_first match
-ok 8 - panda and next_if match
-ok 9 - panda and hash_crash match
-      panda:    1091
- grep_first:    1091
- hash_crash:    1091
-    next_if:    1091
-             Rate    next_if grep_first hash_crash      panda
-next_if     439/s         --       -18%       -34%       -60%
-grep_first  534/s        22%         --       -20%       -51%
-hash_crash  666/s        52%        25%         --       -39%
-panda      1101/s       150%       106%        65%         --
+1;
 
-Check count is 300
-ok 10 - panda and grep_first match
-ok 11 - panda and next_if match
-ok 12 - panda and hash_crash match
-      panda:    1291
- grep_first:    1291
- hash_crash:    1291
-    next_if:    1291
-            Rate    next_if grep_first hash_crash      panda
-next_if    155/s         --       -21%       -35%       -61%
-grep_first 195/s        26%         --       -18%       -51%
-hash_crash 238/s        53%        22%         --       -41%
-panda      402/s       159%       106%        69%         --
 
-Check count is 500
-ok 13 - panda and grep_first match
-ok 14 - panda and next_if match
-ok 15 - panda and hash_crash match
-      panda:    1491
- grep_first:    1491
- hash_crash:    1491
-    next_if:    1491
-             Rate    next_if grep_first hash_crash      panda
-next_if    94.4/s         --       -20%       -34%       -62%
-grep_first  118/s        25%         --       -18%       -52%
-hash_crash  143/s        51%        22%         --       -42%
-panda       246/s       160%       109%        72%         --
-
-Check count is 1000
-ok 16 - panda and grep_first match
-ok 17 - panda and next_if match
-ok 18 - panda and hash_crash match
-      panda:    1991
- grep_first:    1991
- hash_crash:    1991
-    next_if:    1991
-             Rate    next_if grep_first hash_crash      panda
-next_if    44.9/s         --       -18%       -31%       -59%
-grep_first 55.0/s        23%         --       -16%       -49%
-hash_crash 65.5/s        46%        19%         --       -40%
-panda       109/s       142%        98%        66%         --

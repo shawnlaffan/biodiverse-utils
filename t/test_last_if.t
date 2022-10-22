@@ -33,7 +33,11 @@ foreach my $i (0 .. $m) {
 
     @len_hash{keys %hash} = values %hash;
 }
-
+my %all_path_keys;
+foreach my $path (values %path_arrays) {
+    @all_path_keys{@$path} = ();
+}
+my @all_path_key_arr = sort {$a <=> $b} keys %all_path_keys;
 
 
 #  only really need to test pp_assign and xs_assign - the rest is useful paranoia
@@ -54,6 +58,25 @@ is_deeply ($inline_AoA, \%len_hash, 'inline results are the same');
 use Data::Printer;
 #p $inline_AoA;
 #p $inline;
+
+#  now the AoA variant that also assigns values
+#diag "--- " . keys %len_hash;
+my $inline_AoA_v = xs_assign_AoA_vals (\%path_arrays, \%len_hash);
+is_deeply ($inline_AoA_v, \%len_hash, 'inline kv assign results are the same');
+
+my %len_hash_undef_vals;
+@len_hash_undef_vals{keys %len_hash} = ();
+$inline_AoA_v = xs_assign_AoA_vals (\%path_arrays, {});
+is_deeply ($inline_AoA_v, \%len_hash_undef_vals, 'inline kv assign results are the same, empty from_hash');
+
+{
+    my @keys_to_delete = @all_path_key_arr[0..10];
+    #diag join ' ', @keys_to_delete;
+    delete local @len_hash{@keys_to_delete};  #  remove some keys
+    $inline_AoA_v = xs_assign_AoA_vals (\%path_arrays, \%len_hash);
+    @len_hash{@keys_to_delete} = ();  #  now assign undef
+    is_deeply ($inline_AoA_v, \%len_hash, 'inline kv assign results are the same, missing keys');
+}
 
 done_testing;
 
@@ -156,3 +179,28 @@ sub xs_assign_AoA {
     return \%combined;
 }
 
+sub xs_assign_AoA_vals {
+    my ($paths, $len_hash) = @_;
+
+    my %combined;
+    my $aref = [@$paths{sort keys %$paths}];  #  sorted to be repro {}ducible
+#p $aref;
+#diag "About to run";
+#my $nk = @{$aref->[0]};
+#diag "There are $nk keys in first array";
+    Biodiverse::Utils::XS::add_hash_keys_and_vals_until_exists_AoA (\%combined, $aref, $len_hash);
+#diag join ' ', sort keys %combined;
+#say STDERR "DONE";
+    return \%combined;
+}
+
+#  more thorough testing of the xsub
+sub xs_assign_AoA_vals_empty_hash {
+    my ($paths, $len_hash) = @_;
+
+    my %combined;
+    my $aref = [@$paths{sort keys %$paths}];  #  sorted to be reproducible
+    Biodiverse::Utils::XS::add_hash_keys_and_vals_until_exists_AoA (\%combined, $aref, {});
+    
+    return \%combined;
+}

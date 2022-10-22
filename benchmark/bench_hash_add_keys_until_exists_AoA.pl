@@ -48,7 +48,11 @@ foreach my $node_count (@node_counts) {
     my $xs         = xs (\@key_lists);
     my $pp         = pp (\@key_lists);
     my $xs_aoa     = xs_aoa (\@key_lists);
+    my $xs_aoa_kv_assgn = xs_aoa_kv_assgn (\@key_lists, $node_num_hash);
+    my $xs_aoa_and_assgn = xs_aoa_and_assgn (\@key_lists, $node_num_hash);
 
+    is ([sort keys %$xs], [sort keys %$xs_aoa_kv_assgn], "keys match for xs kv assgn");
+    is ([sort keys %$xs], [sort keys %$xs_aoa_and_assgn], "keys match for xs and assgn");
     is ($xs, $xs_aoa, "xs and xs_aoa match");
     is ($xs, $last_if, "xs and next_if match");
     #is ($xs, $hash_crash, "xs and hash_crash match");
@@ -67,7 +71,9 @@ foreach my $node_count (@node_counts) {
                 last_if    => sub {last_if(\@key_lists)},
                 xs         => sub {xs(\@key_lists)},
                 xs_aoa     => sub {xs_aoa(\@key_lists)},
-                pp         => sub {pp(\@key_lists)},
+                xs_aoa_and_assgn => sub {xs_aoa_and_assgn(\@key_lists, $node_num_hash)},
+                xs_aoa_kv_assgn  => sub {xs_aoa_kv_assgn(\@key_lists, $node_num_hash)},
+                #pp         => sub {pp(\@key_lists)},
             }
         );
     }
@@ -159,6 +165,41 @@ sub xs_aoa {
     return \%path;
 }
 
+sub xs_aoa_and_assgn {
+    my ($key_lists, $val_hash) = @_;
+    
+    my %path;
+    for my $i (@reps) {
+        my $p = {};
+
+        Biodiverse::Utils::XS::add_hash_keys_until_exists_AoA ($p, $key_lists);
+        Biodiverse::Utils::XS::copy_values_from ($p, $val_hash);
+        
+        if (!$i) {
+            %path = %$p;
+        }
+    }
+
+    return \%path;
+}
+
+sub xs_aoa_kv_assgn {
+    my ($key_lists, $val_hash) = @_;
+    
+    my %path;
+    for my $i (@reps) {
+        my $p = {};
+
+        Biodiverse::Utils::XS::add_hash_keys_and_vals_until_exists_AoA ($p, $key_lists, $val_hash);
+        
+        if (!$i) {
+            %path = %$p;
+        }
+    }
+
+    return \%path;
+}
+
 sub pp {
     my $key_lists = shift;
     
@@ -213,92 +254,3 @@ sub last_if {
 }
 
 
-__END__
-
-perl 5.20.0, centos linux box
-
-perl bench_hash_merger_panda.pl
-
-Check count is 10
-ok 1 - panda and grep_first match
-ok 2 - panda and next_if match
-ok 3 - panda and hash_crash match
-      panda:    1001
- grep_first:    1001
- hash_crash:    1001
-    next_if:    1001
-             Rate    next_if grep_first hash_crash      panda
-next_if    2574/s         --        -6%       -31%       -59%
-grep_first 2749/s         7%         --       -27%       -56%
-hash_crash 3751/s        46%        36%         --       -40%
-panda      6208/s       141%       126%        65%         --
-
-Check count is 50
-ok 4 - panda and grep_first match
-ok 5 - panda and next_if match
-ok 6 - panda and hash_crash match
-      panda:    1041
- grep_first:    1041
- hash_crash:    1041
-    next_if:    1041
-             Rate    next_if grep_first hash_crash      panda
-next_if     797/s         --       -16%       -34%       -59%
-grep_first  954/s        20%         --       -21%       -51%
-hash_crash 1206/s        51%        26%         --       -38%
-panda      1934/s       143%       103%        60%         --
-
-Check count is 100
-ok 7 - panda and grep_first match
-ok 8 - panda and next_if match
-ok 9 - panda and hash_crash match
-      panda:    1091
- grep_first:    1091
- hash_crash:    1091
-    next_if:    1091
-             Rate    next_if grep_first hash_crash      panda
-next_if     439/s         --       -18%       -34%       -60%
-grep_first  534/s        22%         --       -20%       -51%
-hash_crash  666/s        52%        25%         --       -39%
-panda      1101/s       150%       106%        65%         --
-
-Check count is 300
-ok 10 - panda and grep_first match
-ok 11 - panda and next_if match
-ok 12 - panda and hash_crash match
-      panda:    1291
- grep_first:    1291
- hash_crash:    1291
-    next_if:    1291
-            Rate    next_if grep_first hash_crash      panda
-next_if    155/s         --       -21%       -35%       -61%
-grep_first 195/s        26%         --       -18%       -51%
-hash_crash 238/s        53%        22%         --       -41%
-panda      402/s       159%       106%        69%         --
-
-Check count is 500
-ok 13 - panda and grep_first match
-ok 14 - panda and next_if match
-ok 15 - panda and hash_crash match
-      panda:    1491
- grep_first:    1491
- hash_crash:    1491
-    next_if:    1491
-             Rate    next_if grep_first hash_crash      panda
-next_if    94.4/s         --       -20%       -34%       -62%
-grep_first  118/s        25%         --       -18%       -52%
-hash_crash  143/s        51%        22%         --       -42%
-panda       246/s       160%       109%        72%         --
-
-Check count is 1000
-ok 16 - panda and grep_first match
-ok 17 - panda and next_if match
-ok 18 - panda and hash_crash match
-      panda:    1991
- grep_first:    1991
- hash_crash:    1991
-    next_if:    1991
-             Rate    next_if grep_first hash_crash      panda
-next_if    44.9/s         --       -18%       -31%       -59%
-grep_first 55.0/s        23%         --       -16%       -49%
-hash_crash 65.5/s        46%        19%         --       -40%
-panda       109/s       142%        98%        66%         --
