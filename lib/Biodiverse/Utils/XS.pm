@@ -226,8 +226,12 @@ void add_hash_keys_and_vals_until_exists_AoA (SV* dest, SV* from, SV* val_href) 
 
     for (j = 0; j <= num_arrays; j++) {
         
-        SV **this_arr_ref = av_fetch(arr_from, j, 0);
-        
+        // SV **this_arr_ref = av_fetch(arr_from, j, 0);
+        //  Avoid all the tied and bounds checks in av_fetch
+        SV **this_arr_ref = &AvARRAY(arr_from)[j];
+        //printf ("Checking key %i: '%s'\n", j, SvPV(*, PL_na));
+
+
         if (SvTYPE(SvRV(*this_arr_ref)) == SVt_PVAV) {
             
             this_arr = (AV*)SvRV(*this_arr_ref);
@@ -237,8 +241,9 @@ void add_hash_keys_and_vals_until_exists_AoA (SV* dest, SV* from, SV* val_href) 
         
             //  could use a while loop with condition being the key does not exist in dest?
             for (i = 0; i < num_keys_from; i++) {
-                SV **sv_key = av_fetch(this_arr, i, 0);  //  cargo culted from List::MoreUtils::insert_after
-                // printf ("Checking key %i: '%s'\n", i, SvPV(*sv_key, PL_na));
+                // SV **sv_key = av_fetch(this_arr, i, 0);  //  cargo culted from List::MoreUtils::insert_after
+                SV **sv_key = &AvARRAY(this_arr)[i];  // more direct since we know the bounds are safe
+                // fprintf (stderr, "Checking key %i: '%s'\n", i, SvPV(*sv_key, PL_na));
 
                 //  No further processing of this array if the destination hash includes this key                
                 if (hv_exists_ent (hash_dest, *sv_key, 0)) {
