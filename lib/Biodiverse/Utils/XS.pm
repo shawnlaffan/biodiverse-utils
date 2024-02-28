@@ -250,7 +250,7 @@ void add_hash_keys_and_vals_until_exists_AoA (SV* dest, SV* from, SV* val_href) 
 
                 if (hash_entry_from) {
                     // Copy the current value
-                    hv_store_ent(hash_dest, *sv_key, newSVsv(HeVAL(hash_entry_from)), 0);
+                    hv_store_ent(hash_dest, *sv_key, newSVsv_nomg(HeVAL(hash_entry_from)), 0);
                 }
                 else {
                     // Assign undef
