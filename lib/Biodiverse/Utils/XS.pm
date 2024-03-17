@@ -245,7 +245,7 @@ void add_hash_keys_and_vals_until_exists_AoA (SV* dest, SV* from, SV* val_href) 
                 SV **sv_key = &AvARRAY(this_arr)[i];  // more direct since we know the bounds are safe
                 // fprintf (stderr, "Checking key %i: '%s'\n", i, SvPV(*sv_key, PL_na));
 
-                //  No further processing of this array if the destination hash includes this key                
+                //  No further processing of this array if the destination hash includes this key
                 if (hv_exists_ent (hash_dest, *sv_key, 0)) {
                     // printf ("Found key %s\n", SvPV(*sv_key, PL_na));
                     break;
@@ -255,7 +255,7 @@ void add_hash_keys_and_vals_until_exists_AoA (SV* dest, SV* from, SV* val_href) 
 
                 if (hash_entry_from) {
                     // Copy the current value
-                    hv_store_ent(hash_dest, *sv_key, newSVsv_nomg(HeVAL(hash_entry_from)), 0);
+                    hv_store_ent(hash_dest, *sv_key, newSVsv_nomg(HeVAL(hash_entry_from)), HeHASH(hash_entry_from));
                 }
                 else {
                     // Assign undef
