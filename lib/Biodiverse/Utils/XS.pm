@@ -87,7 +87,7 @@ void copy_values_from (SV* dest, SV* from) {
         // printf (exists ? "Exists\n" : "not exists\n");
         if (hv_exists_ent (hash_from, sv_key, 0)) {
             // printf ("Found key %s\n", SvPV(sv_key, PL_na));
-            hash_entry_from = hv_fetch_ent (hash_from, sv_key, 0, 0);
+            hash_entry_from = hv_fetch_ent (hash_from, sv_key, 0, HeHASH(hash_entry_dest));
 
             // need to decrement the current ref count before we overwrite it,
             // otherwise Test::LeakTrace notes unhappiness.
@@ -355,11 +355,11 @@ get_hash_shared_and_unique (SV* h1, SV* h2) {
         sv_key = hv_iterkeysv(hash_entry);
         sv_val = newSVsv(HeVAL(hash_entry));
 
-        if (hv_exists_ent (hash2, sv_key, 0)) {
-            hv_store_ent(hash_a, sv_key, sv_val, 0);
+        if (hv_exists_ent (hash2, sv_key, HeHASH(hash_entry))) {
+            hv_store_ent(hash_a, sv_key, sv_val, HeHASH(hash_entry));
         }
         else {
-            hv_store_ent(hash_b, sv_key, sv_val, 0);
+            hv_store_ent(hash_b, sv_key, sv_val, HeHASH(hash_entry));
        }
     }
 
@@ -368,9 +368,9 @@ get_hash_shared_and_unique (SV* h1, SV* h2) {
         hash_entry = hv_iternext(hash2);  
         sv_key = hv_iterkeysv(hash_entry);
         
-        if (!hv_exists_ent (hash1, sv_key, 0)) {
+        if (!hv_exists_ent (hash1, sv_key, HeHASH(hash_entry))) {
             sv_val = newSVsv(HeVAL(hash_entry));
-            hv_store_ent(hash_c, sv_key, sv_val, 0);
+            hv_store_ent(hash_c, sv_key, sv_val, HeHASH(hash_entry));
         }
     }
 
