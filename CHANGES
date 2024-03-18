@@ -1,5 +1,11 @@
 Revision history for Biodiverse::Utils.
 
+1.10 2024-03-18
+    - Use more efficient api functions internally
+
+1.09 2024-03-??
+    - I forget right now
+
 1.08 2022-10-22
     - Add add_hash_keys_and_vals_until_exists_AoA
       This combines the functionality of two xsubs.
