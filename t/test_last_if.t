@@ -1,4 +1,7 @@
 use Test::More;
+use strict;
+use warnings;
+
 
 use Biodiverse::Utils::XS;
 use Biodiverse::Utils::PP;
