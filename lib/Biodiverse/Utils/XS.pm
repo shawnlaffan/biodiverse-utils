@@ -374,17 +374,9 @@ get_hash_shared_and_unique (SV* h1, SV* h2) {
         }
     }
 
-    SV* key_a = newSVpvn("a",1);
-    SV* key_b = newSVpvn("b",1);
-    SV* key_c = newSVpvn("c",1);
-
-    hv_store_ent(result_hash, key_a, (SV*) newRV_noinc((SV *) hash_a), 0);
-    hv_store_ent(result_hash, key_b, (SV*) newRV_noinc((SV *) hash_b), 0);
-    hv_store_ent(result_hash, key_c, (SV*) newRV_noinc((SV *) hash_c), 0);
-
-    SvREFCNT_dec (key_a);
-    SvREFCNT_dec (key_b);
-    SvREFCNT_dec (key_c);
+    hv_stores(result_hash, "a", (SV*) newRV_noinc((SV *) hash_a));
+    hv_stores(result_hash, "b", (SV*) newRV_noinc((SV *) hash_b));
+    hv_stores(result_hash, "c", (SV*) newRV_noinc((SV *) hash_c));
 
     return newRV_noinc((SV *) result_hash);
 }
