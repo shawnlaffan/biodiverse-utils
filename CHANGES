@@ -1,5 +1,8 @@
 Revision history for Biodiverse::Utils.
 
+1.11 2024-10-03
+    - Build with a patched Inline::Module to avoid warnings under perl 5.40
+
 1.10 2024-03-18
     - Use more efficient api functions internally
 
