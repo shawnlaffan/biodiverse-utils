@@ -1,5 +1,5 @@
 package Biodiverse::Utils::XS;
-our $VERSION = '1.10';
+our $VERSION = '1.11';
 use strict; use warnings;
 
 use Exporter 'import';
@@ -70,7 +70,7 @@ void copy_values_from (SV* dest, SV* from) {
       croak("dest is not a reference");
     if (! SvROK(from))
       croak("from is not a reference");
-
+      
     hash_from = (HV*)SvRV(from);
     hash_dest = (HV*)SvRV(dest);
   

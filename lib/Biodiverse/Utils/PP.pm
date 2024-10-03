@@ -1,5 +1,5 @@
 package Biodiverse::Utils::PP;
-our $VERSION = '1.10';
+our $VERSION = '1.11';
 use strict; use warnings;
 
 use List::Util qw /min max/;
